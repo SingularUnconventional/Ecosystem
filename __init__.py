@@ -4,7 +4,7 @@ import time
 import pygame
 import numpy as np
 
-Ecosystem_size = (30, 30)
+Ecosystem_size = (40, 40)
 Grid_size = 5
 
 Ecosystem_img = []
@@ -13,7 +13,7 @@ Grid = [[[] for _ in range(int(Ecosystem_size[0]/Grid_size))]for _ in range(int(
 
 Creatures = []
 
-Creatures = [[1000, np.random.randint(1,3), np.random.randint(2, 5), 0, [0, 0], [np.random.randint(Ecosystem_size[0]), np.random.randint(Ecosystem_size[1])], 1000] for _ in range(10)]
+Creatures = [[500, np.random.randint(1,3), np.random.randint(2,5), 0, [0, 0], [np.random.randint(Ecosystem_size[0]), np.random.randint(Ecosystem_size[1])], 500] for _ in range(30)]
 
 '''
 0 총 에너지량
@@ -26,15 +26,14 @@ Creatures = [[1000, np.random.randint(1,3), np.random.randint(2, 5), 0, [0, 0], 
 5 위치_
 6 현제 에너지량
 '''
-image_bg = pygame.image.load('./image.png')
-print(list(image_bg))
 
 clock = pygame.time.Clock()
 while True:
-	Creatures.append([500, 0, 1, 1, [0, 0], [np.random.randint(Ecosystem_size[0]), np.random.randint(Ecosystem_size[1])], 500])
+	Creatures.append([200, 0, 1, 1, [0, 0], [np.random.randint(Ecosystem_size[0]), np.random.randint(Ecosystem_size[1])], 200])
 
 	#clock.tick(32)
 	input()
+	
 	Ecosystem_img = [[0 for _ in range(Ecosystem_size[0])] for _ in range(Ecosystem_size[1])]
 	Grid = [[[] for _ in range(int(Ecosystem_size[0]/Grid_size))]for _ in range(int(Ecosystem_size[1]/Grid_size))]
 
@@ -70,24 +69,32 @@ while True:
 
 					Creatures.remove(target_Creature)
 				else:
-					Creature[5][0] += np.cos(target_angle) * Creature[1]
-					Creature[5][1] += np.sin(target_angle) * Creature[1]
-			if ntrition_stages_v == 1:
-				Creature[5][0] += np.cos(target_angle) * Creature[1] *(-1)
-				Creature[5][1] += np.sin(target_angle) * Creature[1] *(-1)
+					Creature[5][0] += np.sin(target_angle) * Creature[1]
+					Creature[5][1] += np.cos(target_angle) * Creature[1]
+					
+			elif ntrition_stages_v == 1:
+				Creature[5][0] += np.sin(target_angle) * -Creature[1]
+				Creature[5][1] += np.cos(target_angle) * -Creature[1]
 			else:
 				if Creature[3] == target_Creature[3] and Creature[6] > Creature[0]/2 and target_Creature[6] > Creature[0]/2:
 					if target_length < Creature[1]: 
 						Creature[6] /= 2
 						target_Creature[6] /= 2
-						Creatures.append([1000, np.random.randint(1,3), Creature[2], Creature[3], [0, 0], [Creature[5][0]+0.1, Creature[5][1]+0.1], Creature[6]+target_Creature[6]])
+						ENG = np.random.choice([Creature[0], target_Creature[0]])
+						SPEED = np.random.choice([Creature[1], target_Creature[1]])
+						Creatures.append(
+							[np.random.choice([ENG, ENG+np.random.randint(-30, 30)], p=[0.75,0.25]), 
+							np.random.choice([SPEED, SPEED+np.random.random()*0.1], p=[0.75,0.25]), 
+							Creature[2], Creature[3], [0, 0], 
+							[Creature[5][0]+0.1, Creature[5][1]+0.1], 
+							Creature[6]+target_Creature[6]])
 					else:
-						Creature[5][0] += np.cos(target_angle) * Creature[1]
-						Creature[5][1] += np.sin(target_angle) * Creature[1]
+						Creature[5][0] += np.sin(target_angle) * Creature[1]
+						Creature[5][1] += np.cos(target_angle) * Creature[1]
 				else:
-					Creature[5][0] += np.cos(target_angle) * Creature[1] *(-1)
-					Creature[5][1] += np.sin(target_angle) * Creature[1] *(-1)
-		except ValueError:print(Creature)
+					Creature[5][0] += np.sin(target_angle) * -Creature[1]
+					Creature[5][1] += np.cos(target_angle) * -Creature[1]
+		except ValueError:pass#print(Creature)
 
 		Creature[5][0] %= Ecosystem_size[0]-1
 		Creature[5][1] %= Ecosystem_size[1]-1
@@ -96,19 +103,19 @@ while True:
 		if Creature[6] < 0: Creatures.remove(Creature)
 		Creature[6] -= Creature[1]
 		
-	#os.system('cls')
+	os.system('cls')
 	#print(target_length)
 
-
-	# for y in Ecosystem_img:
-	# 	for x in y: 
-	# 		if x == 0: print(' ',end=' ')
-	# 		else: print(x,end=' ')
-	# 	print()
-	clock.tick(64)
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			sys.exit()
+	for y in Ecosystem_img:
+		for x in y: 
+			if x == 0: print(' ',end=' ')
+			else: print(x,end=' ')
+		print()
+	
+	# clock.tick(64)
+	# for event in pygame.event.get():
+	# 	if event.type == pygame.QUIT:
+	# 		pygame.quit()
+	# 		sys.exit()
 			
 	
